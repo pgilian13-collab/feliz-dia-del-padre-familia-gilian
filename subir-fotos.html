@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Fotos - Galería</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: #0a0a0a; color: #fdfdfa; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+        h1 { font-family: Impact, sans-serif; font-size: 2.5rem; color: #ff2a00; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 2rem; }
+        .dropzone { width: 100%; max-width: 700px; border: 3px dashed #333; padding: 3rem; text-align: center; transition: all 0.3s; cursor: pointer; margin-bottom: 2rem; }
+        .dropzone:hover, .dropzone.dragover { border-color: #ff2a00; background: #ff2a0010; }
+        .dropzone-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .dropzone-text { font-size: 0.8rem; color: #888; letter-spacing: 1px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; width: 100%; max-width: 700px; }
+        .card { border: 2px solid #222; padding: 0.5rem; position: relative; }
+        .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .card .name { font-size: 0.6rem; color: #ccff00; margin-top: 0.3rem; text-align: center; }
+        .card .status { font-size: 0.55rem; color: #666; text-align: center; }
+        .card .status.ok { color: #00ff88; }
+        .card .status.error { color: #ff2a00; }
+        .card .remove { position: absolute; top: 5px; right: 5px; background: #ff2a00; color: #fff; border: none; width: 20px; height: 20px; cursor: pointer; font-size: 0.7rem; font-family: monospace; }
+        .urls-box { width: 100%; max-width: 700px; margin-top: 2rem; background: #111; border: 2px solid #333; padding: 1rem; }
+        .urls-box h3 { font-size: 0.7rem; color: #ff2a00; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .urls-box textarea { width: 100%; height: 200px; background: #000; color: #ccff00; border: 1px solid #333; font-family: monospace; font-size: 0.7rem; padding: 0.5rem; resize: vertical; }
+        .urls-box button { margin-top: 0.5rem; padding: 8px 16px; background: #ff2a00; color: #fff; border: none; font-family: monospace; font-size: 0.7rem; cursor: pointer; letter-spacing: 1px; }
+        .urls-box button:hover { background: #cc0000; }
+        .counter { font-size: 0.6rem; color: #444; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>SUBIR FOTOS</h1>
+    <p class="subtitle">// DRAG & DROP O CLICK PARA SELECCIONAR</p>
+
+    <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">+</div>
+        <div class="dropzone-text">ARRASTRA LAS 11 FOTOS AQUÍ<br>o haz clic para seleccionar</div>
+    </div>
+    <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+
+    <div class="grid" id="grid"></div>
+    <div class="counter" id="counter">0 / 11 fotos</div>
+
+    <div class="urls-box" id="urlsBox" style="display:none">
+        <h3>// URLs DE IMGBB (copia y pega en la conversación)</h3>
+        <textarea id="urlsOutput" readonly></textarea>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('urlsOutput').value)">COPIAR URLs</button>
+    </div>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const grid = document.getElementById('grid');
+        const counter = document.getElementById('counter');
+        const urlsBox = document.getElementById('urlsBox');
+        const urlsOutput = document.getElementById('urlsOutput');
+        const API_KEY = 'c8e4ab9ab62f6479c4842eda4c204407';
+        const urls = [];
+
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+        async function handleFiles(files) {
+            for (const file of files) {
+                await uploadFile(file);
+            }
+        }
+
+        async function uploadFile(file) {
+            const idx = urls.length + 1;
+            const name = `foto-${String(idx).padStart(2,'0')}.jpg`;
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="remove" onclick="this.parentElement.remove()">X</button>
+                <img src="${URL.createObjectURL(file)}" alt="${name}">
+                <div class="name">${name}</div>
+                <div class="status">Subiendo...</div>
+            `;
+            grid.appendChild(card);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    card.querySelector('.status').textContent = 'OK';
+                    card.querySelector('.status').className = 'status ok';
+                    urls.push({ name, url: data.data.url });
+                    updateOutput();
+                } else {
+                    card.querySelector('.status').textContent = 'ERROR';
+                    card.querySelector('.status').className = 'status error';
+                }
+            } catch (err) {
+                card.querySelector('.status').textContent = 'ERROR DE RED';
+                card.querySelector('.status').className = 'status error';
+            }
+
+            counter.textContent = `${urls.length} / 11 fotos`;
+        }
+
+        function updateOutput() {
+            urlsBox.style.display = 'block';
+            urlsOutput.value = urls.map(u => `${u.name}: ${u.url}`).join('\n');
+        }
+    </script>
+</body>
+</html>
