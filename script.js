@@ -1,7 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    initSplash();
     initScrollAnimations();
     initGalleryEffects();
 });
+
+/* SPLASH SCREEN */
+function initSplash() {
+    const splash = document.getElementById('splash');
+    if (!splash) return;
+
+    // Bloquear scroll mientras splash está visible
+    document.body.style.overflow = 'hidden';
+
+    splash.addEventListener('click', () => {
+        splash.classList.add('hide');
+        document.body.style.overflow = '';
+        setTimeout(() => splash.remove(), 700);
+    });
+
+    // También cerrar con cualquier tecla
+    document.addEventListener('keydown', function closeSplash(e) {
+        splash.classList.add('hide');
+        document.body.style.overflow = '';
+        setTimeout(() => splash.remove(), 700);
+        document.removeEventListener('keydown', closeSplash);
+    });
+}
 
 function initScrollAnimations() {
     const elements = document.querySelectorAll('.poster-card, .gallery-item, .video-card, .quote-poster');
