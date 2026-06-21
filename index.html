@@ -132,6 +132,12 @@
             <h2>RECUERDOS</h2>
             <span class="accent-line"></span>
         </div>
+        <div class="gallery-actions">
+            <button class="upload-btn" onclick="openUploadModal()">
+                <span class="upload-icon">+</span>
+                SUBIR TU FOTO
+            </button>
+        </div>
 
         <div class="gallery-grid">
             <div class="gallery-item gallery-large" onclick="openLightbox(this)">
@@ -278,6 +284,31 @@
         <div class="lightbox-footer">
             <div class="lightbox-barcode"></div>
             <span class="lightbox-label">// VISTA COMPLETA</span>
+        </div>
+    </div>
+
+    <!-- ===================== UPLOAD MODAL ===================== -->
+    <div id="upload-modal" class="upload-modal" onclick="closeUploadModal(event)">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <span class="upload-modal-label">// SUBIR FOTO</span>
+                <button class="lightbox-close" onclick="closeUploadModal(event)">X</button>
+            </div>
+            <div class="upload-dropzone" id="upload-dropzone">
+                <div class="upload-dropzone-icon">+</div>
+                <p class="upload-dropzone-text">ARRASTRA TU FOTO AQUÍ</p>
+                <p class="upload-dropzone-sub">o haz clic para seleccionar</p>
+                <input type="file" id="upload-input" accept="image/*" style="display:none">
+            </div>
+            <div class="upload-name-field">
+                <label class="upload-name-label">TU NOMBRE:</label>
+                <input type="text" id="upload-name-input" class="upload-name-input" placeholder="Ej: Carlos Gilian">
+            </div>
+            <div class="upload-status" id="upload-status"></div>
+            <div class="upload-preview" id="upload-preview" style="display:none">
+                <img id="upload-preview-img" src="">
+                <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">SUBIR FOTO</button>
+            </div>
         </div>
     </div>
 
