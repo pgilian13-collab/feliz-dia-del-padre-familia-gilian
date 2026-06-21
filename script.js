@@ -30,6 +30,17 @@ function initSplash() {
         splash.classList.add('hide');
         document.body.style.overflow = '';
         setTimeout(() => splash.remove(), 700);
+
+        // Iniciar música automáticamente
+        const audio = document.getElementById('bg-music');
+        const icon = document.getElementById('music-icon');
+        const bar = document.getElementById('music-bar');
+        if (audio) {
+            audio.play().catch(() => {});
+            icon.innerHTML = '&#9646;&#9646;';
+            bar.classList.remove('paused');
+            musicPlaying = true;
+        }
     });
 
     document.addEventListener('keydown', function closeSplash(e) {
@@ -37,6 +48,17 @@ function initSplash() {
         document.body.style.overflow = '';
         setTimeout(() => splash.remove(), 700);
         document.removeEventListener('keydown', closeSplash);
+
+        // Iniciar música automáticamente
+        const audio = document.getElementById('bg-music');
+        const icon = document.getElementById('music-icon');
+        const bar = document.getElementById('music-bar');
+        if (audio) {
+            audio.play().catch(() => {});
+            icon.innerHTML = '&#9646;&#9646;';
+            bar.classList.remove('paused');
+            musicPlaying = true;
+        }
     });
 }
 
