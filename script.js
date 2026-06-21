@@ -158,6 +158,7 @@ function resetUploadForm() {
     document.getElementById('upload-status').textContent = '';
     document.getElementById('upload-status').className = 'upload-status';
     document.getElementById('upload-name-input').value = '';
+    document.getElementById('upload-title-input').value = '';
     document.getElementById('upload-confirm-btn').disabled = false;
     document.getElementById('upload-confirm-btn').textContent = 'SUBIR FOTO';
 }
@@ -166,11 +167,14 @@ async function confirmUpload() {
     if (!uploadFileData) return;
 
     const nameInput = document.getElementById('upload-name-input').value.trim();
+    const titleInput = document.getElementById('upload-title-input').value.trim();
     if (!nameInput) {
         document.getElementById('upload-status').textContent = 'ESCRIBE TU NOMBRE';
         document.getElementById('upload-status').className = 'upload-status error';
         return;
     }
+
+    const photoTitle = titleInput || nameInput.toUpperCase();
 
     const btn = document.getElementById('upload-confirm-btn');
     const status = document.getElementById('upload-status');
@@ -194,6 +198,7 @@ async function confirmUpload() {
 
             await db.collection('family-photos').add({
                 name: nameInput,
+                title: photoTitle,
                 url: data.data.url,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -239,13 +244,16 @@ function addUserPhotoToGallery(photo) {
     if (!grid) return;
     if (grid.querySelector(`[data-photo-id="${photo.id}"]`)) return;
 
+    const displayTitle = (photo.title || photo.name).toUpperCase();
+
     const item = document.createElement('div');
     item.className = 'gallery-item user-photo';
     item.setAttribute('data-photo-id', photo.id);
     item.setAttribute('onclick', 'openLightbox(this)');
     item.innerHTML = `
-        <img src="${photo.url}" alt="${photo.name}" class="gallery-img">
-        <div class="photo-caption">${photo.name.toUpperCase()}</div>
+        <img src="${photo.url}" alt="${displayTitle}" class="gallery-img">
+        <div class="photo-caption">${displayTitle}</div>
+        <div class="photo-author">${photo.name.toUpperCase()}</div>
         <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto('${photo.id}')">X</button>
     `;
     grid.appendChild(item);

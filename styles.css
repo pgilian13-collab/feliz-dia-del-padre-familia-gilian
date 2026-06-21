@@ -970,37 +970,76 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 /* GALLERY ACTIONS */
 .gallery-actions {
     max-width: 1200px;
-    margin: 0 auto 2rem;
+    margin: 0 auto 2.5rem;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.upload-desc {
+    text-align: center;
+    max-width: 600px;
+}
+
+.upload-desc-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    text-transform: uppercase;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.upload-desc-sub {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-main);
+    opacity: 0.6;
+    font-style: italic;
+    letter-spacing: 1px;
 }
 
 .upload-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 10px 20px;
-    background: var(--text-main);
+    gap: 0.8rem;
+    padding: 16px 36px;
+    background: var(--accent);
     color: var(--bg-main);
     font-family: var(--font-mono);
     font-weight: bold;
-    font-size: 0.7rem;
-    letter-spacing: 1px;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    border: 2px solid var(--text-main);
-    box-shadow: 3px 3px 0px var(--accent);
+    border: 3px solid var(--text-main);
+    box-shadow: 6px 6px 0px var(--text-main);
     cursor: pointer;
     transition: all 0.3s ease;
+    animation: uploadPulse 2s ease-in-out infinite;
 }
 
 .upload-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0px var(--accent);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0px var(--text-main);
+    animation: none;
+}
+
+.upload-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px var(--text-main);
+}
+
+@keyframes uploadPulse {
+    0%, 100% { box-shadow: 6px 6px 0px var(--text-main); }
+    50% { box-shadow: 6px 6px 0px var(--accent), 0 0 20px rgba(255, 42, 0, 0.3); }
 }
 
 .upload-icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-family: var(--font-display);
+    line-height: 1;
 }
 
 /* UPLOAD MODAL */
@@ -1185,6 +1224,35 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 
 .gallery-item:hover .user-photo-remove {
     opacity: 1;
+}
+
+.photo-author {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--accent);
+    color: var(--bg-main);
+    padding: 0.4rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .photo-author {
+    transform: translateY(0);
+}
+
+.gallery-item:hover .photo-caption {
+    transform: translateY(0);
+}
+
+.gallery-item:not(:hover) .photo-author {
+    transform: translateY(100%);
 }
 
 /* RESPONSIVE */
