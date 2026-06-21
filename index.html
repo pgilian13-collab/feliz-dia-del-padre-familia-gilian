@@ -322,6 +322,48 @@
         </div>
     </div>
 
+    <!-- ===================== MUSIC PLAYER ===================== -->
+    <div id="music-player" class="music-player">
+        <button class="music-btn" id="music-btn" onclick="toggleMusic()">
+            <span class="music-icon" id="music-icon">&#9654;</span>
+        </button>
+        <div class="music-info">
+            <span class="music-label">MÚSICA</span>
+            <div class="music-bar" id="music-bar">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    <audio id="bg-music" loop preload="auto">
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ===================== SLIDESHOW ===================== -->
+    <div id="slideshow" class="slideshow">
+        <div class="slideshow-bar">
+            <span class="slideshow-label">// PRESENTACIÓN AUTOMÁTICA</span>
+            <span class="slideshow-counter" id="slideshow-counter">1 / 10</span>
+            <button class="lightbox-close" onclick="closeSlideshow()">X</button>
+        </div>
+        <div class="slideshow-content">
+            <button class="slideshow-arrow slideshow-prev" onclick="slideshowPrev()">&#10094;</button>
+            <div class="slideshow-image-wrap">
+                <img id="slideshow-img" src="" alt="">
+                <div class="slideshow-caption" id="slideshow-caption"></div>
+            </div>
+            <button class="slideshow-arrow slideshow-next" onclick="slideshowNext()">&#10095;</button>
+        </div>
+        <div class="slideshow-footer">
+            <div class="lightbox-barcode"></div>
+            <span class="lightbox-label">// AUTOPLAY</span>
+        </div>
+    </div>
+
+    <!-- Slideshow trigger button -->
+    <div class="slideshow-trigger" onclick="openSlideshow()">
+        <span>&#9654;</span> PRESENTACIÓN
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
