@@ -122,6 +122,15 @@ body:has(.theme-toggle-input:checked) .mode-chaos { display: inline; }
     inset: 0;
     background: rgba(253, 253, 250, 0.85);
     z-index: 2;
+    transition: background 0.6s ease;
+}
+
+body:has(.theme-toggle-input:checked) .hero-overlay {
+    background: rgba(17, 17, 17, 0.8);
+}
+
+body:has(.theme-toggle-input:checked) .hero-brutalist {
+    background-color: #111111;
 }
 
 .css-mesh-grain {
