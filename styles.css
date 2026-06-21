@@ -2,7 +2,7 @@
 
 :root {
     --bg-main: #fdfdfa;
-    --text-main: #0a0a00a0a0a0;
+    --text-main: #0a0a0a;
     --accent: #ff2a00;
     --shadow-color: #0a0a0a;
     --geo-bg: repeating-linear-gradient(45deg, var(--text-main) 0 2px, transparent 2px 10px);
@@ -165,14 +165,14 @@ body:has(.theme-toggle-input:checked) .mode-chaos { display: inline; }
     letter-spacing: -0.04em;
     color: var(--text-main);
     text-transform: uppercase;
-    mix-blend-mode: exclusion;
     transition: color 0.6s ease, text-shadow 0.6s ease;
 }
 
 .word-2 {
     margin-left: 10%;
     color: transparent;
-    -webkit-text-stroke: 3px var(--text-main);
+    -webkit-text-stroke: 4px var(--text-main);
+    paint-order: stroke fill;
 }
 
 /* TAPE RIBBON */
