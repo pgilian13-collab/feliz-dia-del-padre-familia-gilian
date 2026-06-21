@@ -10,7 +10,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const API_KEY = 'c8e4ab9ab62f6479c4842eda4c204407';
+const API_KEY = 'a94b54677ccacbd463a54545b578b3a3';
 
 document.addEventListener('DOMContentLoaded', () => {
     initSplash();
