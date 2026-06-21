@@ -134,59 +134,54 @@
         </div>
 
         <div class="gallery-grid">
-            <div class="gallery-item gallery-large">
-                <img src="fotos/foto-01.png" alt="Familia en la iglesia" class="gallery-img">
-                <div class="photo-caption">FAMILIA EN LA IGLESIA</div>
+            <div class="gallery-item gallery-large" onclick="openLightbox(this)">
+                <img src="fotos/foto-01.png" alt="FIESTA PARIACANCHA" class="gallery-img">
+                <div class="photo-caption">FIESTA PARIACANCHA</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-02.png" alt="Turismo Selva" class="gallery-img">
-                <div class="photo-caption">TURISMO SELVA</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-02.png" alt="DIOMEDES EN TURISMO SELVA" class="gallery-img">
+                <div class="photo-caption">DIOMEDES EN TURISMO SELVA</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-03.png" alt="En el mirador" class="gallery-img">
-                <div class="photo-caption">EN EL MIRADOR</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-03.png" alt="DENIS EN CARPISH" class="gallery-img">
+                <div class="photo-caption">DENIS EN CARPISH</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-04.png" alt="Retrato" class="gallery-img">
-                <div class="photo-caption">RETRATO</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-04.png" alt="HUBERT" class="gallery-img">
+                <div class="photo-caption">HUBERT</div>
             </div>
 
-            <div class="gallery-item gallery-large">
-                <img src="fotos/foto-05.png" alt="Navidad con Santa" class="gallery-img">
-                <div class="photo-caption">NAVIDAD CON SANTA</div>
+            <div class="gallery-item gallery-large" onclick="openLightbox(this)">
+                <img src="fotos/foto-05.png" alt="HUBERT CON SANTA" class="gallery-img">
+                <div class="photo-caption">HUBERT CON SANTA</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-06.png" alt="Familia con hijos" class="gallery-img">
-                <div class="photo-caption">FAMILIA CON HIJOS</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-06.png" alt="FAMILIA GILIAN VENTURA" class="gallery-img">
+                <div class="photo-caption">FAMILIA GILIAN VENTURA</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-07.png" alt="Navidad en traje" class="gallery-img">
-                <div class="photo-caption">NAVIDAD EN TRAJE</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-07.png" alt="CARLOS GILIAN" class="gallery-img">
+                <div class="photo-caption">CARLOS GILIAN</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-08.png" alt="Aventura" class="gallery-img">
-                <div class="photo-caption">AVENTURA</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-08.png" alt="CARLOS GILIAN EN LA SELVA" class="gallery-img">
+                <div class="photo-caption">CARLOS GILIAN EN LA SELVA</div>
             </div>
 
-            <div class="gallery-item gallery-large">
-                <img src="fotos/foto-09.png" alt="Papá con su hija" class="gallery-img">
-                <div class="photo-caption">PAPÁ CON SU HIJA</div>
+            <div class="gallery-item gallery-large" onclick="openLightbox(this)">
+                <img src="fotos/foto-09.png" alt="CARLOS GILIAN" class="gallery-img">
+                <div class="photo-caption">CARLOS GILIAN</div>
             </div>
 
-            <div class="gallery-item">
-                <img src="fotos/foto-10.png" alt="Con amigos" class="gallery-img">
-                <div class="photo-caption">CON AMIGOS</div>
-            </div>
-
-            <div class="gallery-item">
-                <img src="fotos/foto-11.png" alt="Pacopampa" class="gallery-img">
-                <div class="photo-caption">PACOPAMPA</div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="fotos/foto-10.png" alt="LOS TRES MOSQUETEROS" class="gallery-img">
+                <div class="photo-caption">LOS TRES MOSQUETEROS</div>
             </div>
         </div>
     </section>
@@ -250,6 +245,21 @@
             </div>
         </div>
     </footer>
+
+    <!-- ===================== LIGHTBOX ===================== -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <div class="lightbox-bar">
+            <span class="lightbox-title" id="lightbox-title"></span>
+            <button class="lightbox-close" onclick="closeLightbox(event)">X</button>
+        </div>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+        </div>
+        <div class="lightbox-footer">
+            <div class="lightbox-barcode"></div>
+            <span class="lightbox-label">// VISTA COMPLETA</span>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
