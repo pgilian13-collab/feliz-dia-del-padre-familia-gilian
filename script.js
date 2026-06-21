@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initGalleryEffects();
     loadFamilyPhotos();
     initUpload();
+    initWall();
 });
 
 /* SPLASH SCREEN */
@@ -425,6 +426,101 @@ async function removeUserPhoto(id) {
 const s = document.createElement('style');
 s.textContent = '@keyframes fadeIn{from{opacity:0}to{opacity:1}}.fade-in{opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease}.fade-in.visible{opacity:1;transform:translateY(0)}';
 document.head.appendChild(s);
+
+/* MESSAGE WALL */
+function initWall() {
+    db.collection('wall-messages').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+                const msg = change.doc.data();
+                addWallCard({ ...msg, id: change.doc.id }, false);
+            }
+            if (change.type === 'removed') {
+                const el = document.querySelector(`[data-wall-id="${change.doc.id}"]`);
+                if (el) el.remove();
+            }
+        });
+    });
+}
+
+function addWallCard(msg, prepend = true) {
+    const grid = document.getElementById('wall-grid');
+    if (!grid) return;
+    if (grid.querySelector(`[data-wall-id="${msg.id}"]`)) return;
+
+    const time = msg.timestamp ? new Date(msg.timestamp.seconds * 1000) : new Date();
+    const timeStr = time.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    const card = document.createElement('div');
+    card.className = 'wall-card';
+    card.setAttribute('data-wall-id', msg.id);
+    card.innerHTML = `
+        <div class="wall-card-author">${(msg.name || 'ANÓNIMO').toUpperCase()}</div>
+        <div class="wall-card-message">"${msg.message}"</div>
+        <div class="wall-card-time">${timeStr}</div>
+        <div class="wall-card-barcode"></div>
+        <button class="wall-card-remove" onclick="removeWallMessage('${msg.id}')">X</button>
+    `;
+
+    if (prepend) {
+        grid.prepend(card);
+    } else {
+        grid.appendChild(card);
+    }
+}
+
+async function submitWallMessage() {
+    const name = document.getElementById('wall-name').value.trim();
+    const message = document.getElementById('wall-message').value.trim();
+    const status = document.getElementById('wall-status');
+    const btn = document.getElementById('wall-submit');
+
+    if (!name || !message) {
+        status.textContent = 'ESCRIBE TU NOMBRE Y MENSAJE';
+        status.className = 'wall-status error';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'ENVIANDO...';
+    status.textContent = '';
+    status.className = 'wall-status';
+
+    try {
+        await db.collection('wall-messages').add({
+            name: name,
+            message: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        status.textContent = 'MENSAJE ENVIADO';
+        status.className = 'wall-status sent';
+        btn.textContent = 'ENVIADO ✓';
+        document.getElementById('wall-name').value = '';
+        document.getElementById('wall-message').value = '';
+
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = 'ENVIAR MENSAJE';
+            status.textContent = '';
+            status.className = 'wall-status';
+        }, 2000);
+    } catch (err) {
+        console.error('Wall error:', err);
+        status.textContent = 'ERROR: ' + err.message.substring(0, 60);
+        status.className = 'wall-status error';
+        btn.disabled = false;
+        btn.textContent = 'ENVIAR MENSAJE';
+    }
+}
+
+async function removeWallMessage(id) {
+    try {
+        await db.collection('wall-messages').doc(id).delete();
+    } catch (err) {
+        console.error('Error removing message:', err);
+    }
+}
 
 /* MUSIC PLAYER */
 let musicPlaying = false;

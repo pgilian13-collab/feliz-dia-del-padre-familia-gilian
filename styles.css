@@ -1583,6 +1583,198 @@ body:has(.theme-toggle-input:checked) .slideshow-image-wrap img {
     border-color: #ccff00;
 }
 
+/* MESSAGE WALL */
+.wall-section {
+    background: linear-gradient(180deg, var(--bg-main) 0%, rgba(255,42,0,0.03) 50%, var(--bg-main) 100%);
+}
+
+.wall-form-container {
+    max-width: 700px;
+    margin: 0 auto 3rem;
+}
+
+.wall-form {
+    border: 2px solid var(--text-main);
+    box-shadow: 8px 8px 0px var(--shadow-color);
+    background: var(--bg-main);
+}
+
+.wall-form-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid var(--text-main);
+}
+
+.wall-form-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.wall-input-group {
+    padding: 1rem 1.5rem 0;
+}
+
+.wall-input-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.wall-input, .wall-textarea {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 2px solid var(--text-main);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+    resize: vertical;
+}
+
+.wall-input:focus, .wall-textarea:focus {
+    border-color: var(--accent);
+}
+
+.wall-textarea {
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.wall-status {
+    padding: 0 1.5rem;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    word-break: break-word;
+}
+
+.wall-status.sent { color: #00cc66; }
+.wall-status.error { color: #ff0000; }
+
+.wall-submit {
+    margin: 1rem 1.5rem 1.5rem;
+    padding: 12px 24px;
+    background: var(--accent);
+    color: var(--bg-main);
+    border: 2px solid var(--accent);
+    font-family: var(--font-mono);
+    font-weight: bold;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px var(--shadow-color);
+    transition: all 0.3s;
+}
+
+.wall-submit:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--shadow-color);
+}
+
+.wall-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* WALL CARDS */
+.wall-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.wall-card {
+    border: 2px solid var(--text-main);
+    padding: 1.5rem;
+    background: var(--bg-main);
+    box-shadow: 5px 5px 0px var(--shadow-color);
+    position: relative;
+    transition: all 0.3s;
+    animation: wallCardIn 0.4s ease-out;
+}
+
+@keyframes wallCardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wall-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 8px 8px 0px var(--shadow-color);
+}
+
+.wall-card-author {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text-main);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--text-main);
+}
+
+.wall-card-message {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text-main);
+    font-style: italic;
+}
+
+.wall-card-time {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.wall-card-barcode {
+    width: 30px;
+    height: 15px;
+    margin-top: 0.8rem;
+    background: repeating-linear-gradient(to right,
+        var(--text-main) 0, var(--text-main) 1px, transparent 1px, transparent 3px,
+        var(--text-main) 3px, var(--text-main) 4px, transparent 4px, transparent 6px
+    );
+    opacity: 0.3;
+}
+
+.wall-card-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    color: var(--bg-main);
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.wall-card:hover .wall-card-remove {
+    opacity: 1;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }

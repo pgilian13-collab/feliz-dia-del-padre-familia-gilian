@@ -262,6 +262,38 @@
         </div>
     </section>
 
+    <!-- ===================== MURO DE MENSAJES ===================== -->
+    <section class="section-brutalist wall-section">
+        <div class="section-label">// DEDICATORIAS</div>
+        <div class="section-header-brutal">
+            <span class="accent-line"></span>
+            <h2>MURO DE MENSAJES</h2>
+            <span class="accent-line"></span>
+        </div>
+
+        <div class="wall-form-container">
+            <div class="wall-form">
+                <div class="wall-form-header">
+                    <span class="wall-form-label">// DEJA TU MENSAJE</span>
+                </div>
+                <div class="wall-input-group">
+                    <label class="wall-input-label">TU NOMBRE:</label>
+                    <input type="text" id="wall-name" class="wall-input" placeholder="Ej: Carlos Gilian">
+                </div>
+                <div class="wall-input-group">
+                    <label class="wall-input-label">TU MENSAJE:</label>
+                    <textarea id="wall-message" class="wall-textarea" placeholder="Escribe tu mensaje para los papás de la familia..." rows="3"></textarea>
+                </div>
+                <div class="wall-status" id="wall-status"></div>
+                <button class="wall-submit" id="wall-submit" onclick="submitWallMessage()">ENVIAR MENSAJE</button>
+            </div>
+        </div>
+
+        <div class="wall-grid" id="wall-grid">
+            <!-- Messages load here from Firebase -->
+        </div>
+    </section>
+
     <!-- ===================== FOOTER ===================== -->
     <footer class="footer-brutalist">
         <div class="footer-content">
