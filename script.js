@@ -1,7 +1,23 @@
+// Firebase Config
+const firebaseConfig = {
+    apiKey: "AIzaSyB9sCbeyBAmVsIqx2xmnAXx7-k_ejCzSyw",
+    authDomain: "dia-del-padre-2b8b3.firebaseapp.com",
+    projectId: "dia-del-padre-2b8b3",
+    storageBucket: "dia-del-padre-2b8b3.firebasestorage.app",
+    messagingSenderId: "154027044031",
+    appId: "1:154027044031:web:0e8c6b560157e7849aaa0a"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const API_KEY = 'c8e4ab9ab62f6479c4842eda4c204407';
+
 document.addEventListener('DOMContentLoaded', () => {
     initSplash();
     initScrollAnimations();
     initGalleryEffects();
+    loadFamilyPhotos();
+    initUpload();
 });
 
 /* SPLASH SCREEN */
@@ -81,51 +97,22 @@ function closeLightbox(e) {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         const lightbox = document.getElementById('lightbox');
+        const uploadModal = document.getElementById('upload-modal');
         if (lightbox && lightbox.classList.contains('active')) {
             lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        if (uploadModal && uploadModal.classList.contains('active')) {
+            uploadModal.classList.remove('active');
             document.body.style.overflow = '';
         }
     }
 });
 
-/* FADE IN ANIMATION */
-const s = document.createElement('style');
-s.textContent = '@keyframes fadeIn{from{opacity:0}to{opacity:1}}.fade-in{opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease}.fade-in.visible{opacity:1;transform:translateY(0)}';
-document.head.appendChild(s);
-
-/* UPLOAD FUNCTIONALITY */
-const API_KEY = 'c8e4ab9ab62f6479c4842eda4c204407';
-let uploadFile = null;
-
-function openUploadModal() {
-    document.getElementById('upload-modal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-    loadUserPhotos();
-}
-
-function closeUploadModal(e) {
-    if (e.target.id === 'upload-modal' || e.target.classList.contains('lightbox-close')) {
-        document.getElementById('upload-modal').classList.remove('active');
-        document.body.style.overflow = '';
-        resetUploadForm();
-    }
-}
-
-function resetUploadForm() {
-    uploadFile = null;
-    document.getElementById('upload-preview').style.display = 'none';
-    document.getElementById('upload-status').textContent = '';
-    document.getElementById('upload-status').className = 'upload-status';
-    document.getElementById('upload-name-input').value = '';
-    document.getElementById('upload-confirm-btn').disabled = false;
-    document.getElementById('upload-confirm-btn').textContent = 'SUBIR FOTO';
-}
-
-// Dropzone events
-document.addEventListener('DOMContentLoaded', () => {
+/* UPLOAD - FIREBASE */
+function initUpload() {
     const dropzone = document.getElementById('upload-dropzone');
     const input = document.getElementById('upload-input');
-
     if (!dropzone || !input) return;
 
     dropzone.addEventListener('click', () => input.click());
@@ -139,19 +126,44 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('change', e => {
         if (e.target.files.length) handleUploadFile(e.target.files[0]);
     });
-});
+}
+
+let uploadFileData = null;
 
 function handleUploadFile(file) {
     if (!file.type.startsWith('image/')) return;
-    uploadFile = file;
+    uploadFileData = file;
     const preview = document.getElementById('upload-preview');
     const previewImg = document.getElementById('upload-preview-img');
     previewImg.src = URL.createObjectURL(file);
     preview.style.display = 'block';
 }
 
+function openUploadModal() {
+    document.getElementById('upload-modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeUploadModal(e) {
+    if (e.target.id === 'upload-modal' || e.target.classList.contains('lightbox-close')) {
+        document.getElementById('upload-modal').classList.remove('active');
+        document.body.style.overflow = '';
+        resetUploadForm();
+    }
+}
+
+function resetUploadForm() {
+    uploadFileData = null;
+    document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('upload-status').textContent = '';
+    document.getElementById('upload-status').className = 'upload-status';
+    document.getElementById('upload-name-input').value = '';
+    document.getElementById('upload-confirm-btn').disabled = false;
+    document.getElementById('upload-confirm-btn').textContent = 'SUBIR FOTO';
+}
+
 async function confirmUpload() {
-    if (!uploadFile) return;
+    if (!uploadFileData) return;
 
     const nameInput = document.getElementById('upload-name-input').value.trim();
     if (!nameInput) {
@@ -168,7 +180,7 @@ async function confirmUpload() {
     status.className = 'upload-status uploading';
 
     const formData = new FormData();
-    formData.append('image', uploadFile);
+    formData.append('image', uploadFileData);
 
     try {
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
@@ -178,16 +190,13 @@ async function confirmUpload() {
         const data = await res.json();
 
         if (data.success) {
-            const url = data.data.url;
-            const photo = { name: nameInput, url: url, id: Date.now() };
+            status.textContent = 'GUARDANDO EN LA NUBE...';
 
-            // Save to localStorage
-            const photos = JSON.parse(localStorage.getItem('family-photos') || '[]');
-            photos.push(photo);
-            localStorage.setItem('family-photos', JSON.stringify(photos));
-
-            // Add to gallery
-            addUserPhotoToGallery(photo);
+            await db.collection('family-photos').add({
+                name: nameInput,
+                url: data.data.url,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
             status.textContent = 'FOTO SUBIDA EXITOSAMENTE';
             status.className = 'upload-status success';
@@ -209,16 +218,25 @@ async function confirmUpload() {
     }
 }
 
-function loadUserPhotos() {
-    const photos = JSON.parse(localStorage.getItem('family-photos') || '[]');
-    photos.forEach(photo => addUserPhotoToGallery(photo));
+/* LOAD PHOTOS FROM FIREBASE */
+function loadFamilyPhotos() {
+    db.collection('family-photos').orderBy('timestamp', 'asc').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+                const photo = change.doc.data();
+                addUserPhotoToGallery({ ...photo, id: change.doc.id });
+            }
+            if (change.type === 'removed') {
+                const el = document.querySelector(`[data-photo-id="${change.doc.id}"]`);
+                if (el) el.remove();
+            }
+        });
+    });
 }
 
 function addUserPhotoToGallery(photo) {
     const grid = document.querySelector('.gallery-grid');
     if (!grid) return;
-
-    // Check if already exists
     if (grid.querySelector(`[data-photo-id="${photo.id}"]`)) return;
 
     const item = document.createElement('div');
@@ -228,15 +246,20 @@ function addUserPhotoToGallery(photo) {
     item.innerHTML = `
         <img src="${photo.url}" alt="${photo.name}" class="gallery-img">
         <div class="photo-caption">${photo.name.toUpperCase()}</div>
-        <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto(${photo.id})">X</button>
+        <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto('${photo.id}')">X</button>
     `;
     grid.appendChild(item);
 }
 
-function removeUserPhoto(id) {
-    const photos = JSON.parse(localStorage.getItem('family-photos') || '[]');
-    const updated = photos.filter(p => p.id !== id);
-    localStorage.setItem('family-photos', JSON.stringify(updated));
-    const el = document.querySelector(`[data-photo-id="${id}"]`);
-    if (el) el.remove();
+async function removeUserPhoto(id) {
+    try {
+        await db.collection('family-photos').doc(id).delete();
+    } catch (err) {
+        console.error('Error removing photo:', err);
+    }
 }
+
+/* FADE IN ANIMATION */
+const s = document.createElement('style');
+s.textContent = '@keyframes fadeIn{from{opacity:0}to{opacity:1}}.fade-in{opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease}.fade-in.visible{opacity:1;transform:translateY(0)}';
+document.head.appendChild(s);
