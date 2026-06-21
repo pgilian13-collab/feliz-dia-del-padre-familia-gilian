@@ -401,17 +401,19 @@
     <!-- ===================== SLIDESHOW ===================== -->
     <div id="slideshow" class="slideshow">
         <div class="slideshow-bar">
-            <span class="slideshow-label">// PRESENTACIÓN AUTOMÁTICA</span>
+            <span class="slideshow-label">// PRESENTACIÓN</span>
             <span class="slideshow-counter" id="slideshow-counter">1 / 10</span>
             <button class="lightbox-close" onclick="closeSlideshow()">X</button>
         </div>
         <div class="slideshow-content">
-            <button class="slideshow-arrow slideshow-prev" onclick="slideshowPrev()">&#10094;</button>
             <div class="slideshow-image-wrap">
                 <img id="slideshow-img" src="" alt="">
                 <div class="slideshow-caption" id="slideshow-caption"></div>
             </div>
-            <button class="slideshow-arrow slideshow-next" onclick="slideshowNext()">&#10095;</button>
+        </div>
+        <div class="slideshow-controls">
+            <button class="slideshow-arrow" onclick="slideshowPrev()">&#10094;</button>
+            <button class="slideshow-arrow" onclick="slideshowNext()">&#10095;</button>
         </div>
         <div class="slideshow-footer">
             <div class="lightbox-barcode"></div>
