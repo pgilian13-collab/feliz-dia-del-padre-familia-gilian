@@ -1076,6 +1076,8 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
     width: 90%;
     max-width: 500px;
     padding: 0;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .upload-modal-header {
@@ -1094,9 +1096,73 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
     text-transform: uppercase;
 }
 
+/* UPLOAD TABS */
+.upload-type-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--text-main);
+}
+
+.upload-tab {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    font-family: var(--font-mono);
+    font-weight: bold;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    border-right: 2px solid var(--text-main);
+}
+
+.upload-tab:last-child {
+    border-right: none;
+}
+
+.upload-tab.active {
+    background: var(--text-main);
+    color: var(--bg-main);
+}
+
+.upload-tab-content {
+    display: none;
+}
+
+.upload-tab-content.active {
+    display: block;
+}
+
+/* CAMERA BUTTON */
+.upload-camera-btn {
+    margin: 0 1.5rem 1rem;
+    padding: 12px;
+    border: 2px dashed var(--accent);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.upload-camera-btn:hover {
+    background: rgba(255, 42, 0, 0.1);
+    border-style: solid;
+}
+
+.upload-camera-btn span {
+    font-size: 1.2rem;
+    margin-right: 0.3rem;
+}
+
 .upload-dropzone {
     margin: 1.5rem;
-    padding: 2.5rem;
+    padding: 2rem;
     border: 2px dashed var(--text-main);
     text-align: center;
     cursor: pointer;
@@ -1234,6 +1300,37 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 
 .gallery-item:hover .user-photo-remove {
     opacity: 1;
+}
+
+/* VIDEO PLAY ICON */
+.video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: var(--accent);
+    color: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gallery-item:hover .video-play-icon {
+    opacity: 1;
+}
+
+.user-video .gallery-img {
+    filter: brightness(0.7);
+}
+
+.user-video:hover .gallery-img {
+    filter: brightness(0.9);
 }
 
 .photo-author {

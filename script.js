@@ -132,32 +132,92 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* UPLOAD - FIREBASE */
+let uploadFileData = null;
+let uploadMode = 'foto'; // 'foto' or 'video'
+
 function initUpload() {
+    // Photo dropzone
     const dropzone = document.getElementById('upload-dropzone');
     const input = document.getElementById('upload-input');
-    if (!dropzone || !input) return;
+    if (dropzone && input) {
+        dropzone.addEventListener('click', () => input.click());
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.style.borderColor = 'var(--accent)'; });
+        dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = ''; });
+        dropzone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzone.style.borderColor = '';
+            if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0], 'foto');
+        });
+        input.addEventListener('change', e => {
+            if (e.target.files.length) handleUploadFile(e.target.files[0], 'foto');
+        });
+    }
 
-    dropzone.addEventListener('click', () => input.click());
-    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.style.borderColor = 'var(--accent)'; });
-    dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = ''; });
-    dropzone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropzone.style.borderColor = '';
-        if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0]);
-    });
-    input.addEventListener('change', e => {
-        if (e.target.files.length) handleUploadFile(e.target.files[0]);
-    });
+    // Video dropzone
+    const dropzoneV = document.getElementById('upload-dropzone-video');
+    const inputV = document.getElementById('upload-input-video');
+    if (dropzoneV && inputV) {
+        dropzoneV.addEventListener('click', () => inputV.click());
+        dropzoneV.addEventListener('dragover', e => { e.preventDefault(); dropzoneV.style.borderColor = 'var(--accent)'; });
+        dropzoneV.addEventListener('dragleave', () => { dropzoneV.style.borderColor = ''; });
+        dropzoneV.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzoneV.style.borderColor = '';
+            if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0], 'video');
+        });
+        inputV.addEventListener('change', e => {
+            if (e.target.files.length) handleUploadFile(e.target.files[0], 'video');
+        });
+    }
+
+    // Camera inputs
+    const camFoto = document.getElementById('camera-input-foto');
+    const camVideo = document.getElementById('camera-input-video');
+    if (camFoto) {
+        camFoto.addEventListener('change', e => {
+            if (e.target.files.length) handleUploadFile(e.target.files[0], 'foto');
+        });
+    }
+    if (camVideo) {
+        camVideo.addEventListener('change', e => {
+            if (e.target.files.length) handleUploadFile(e.target.files[0], 'video');
+        });
+    }
 }
 
-let uploadFileData = null;
+function switchUploadTab(tab) {
+    uploadMode = tab;
+    document.getElementById('tab-foto').classList.toggle('active', tab === 'foto');
+    document.getElementById('tab-video').classList.toggle('active', tab === 'video');
+    document.getElementById('upload-foto-tab').classList.toggle('active', tab === 'foto');
+    document.getElementById('upload-video-tab').classList.toggle('active', tab === 'video');
+    resetUploadForm();
+}
 
-function handleUploadFile(file) {
-    if (!file.type.startsWith('image/')) return;
+function openCamera(type) {
+    if (type === 'foto') {
+        document.getElementById('camera-input-foto').click();
+    } else {
+        document.getElementById('camera-input-video').click();
+    }
+}
+
+function handleUploadFile(file, mode) {
     uploadFileData = file;
+    uploadMode = mode;
     const preview = document.getElementById('upload-preview');
     const previewImg = document.getElementById('upload-preview-img');
-    previewImg.src = URL.createObjectURL(file);
+    const previewVideo = document.getElementById('upload-preview-video');
+
+    if (mode === 'video') {
+        previewImg.style.display = 'none';
+        previewVideo.style.display = 'block';
+        previewVideo.src = URL.createObjectURL(file);
+    } else {
+        previewVideo.style.display = 'none';
+        previewImg.style.display = 'block';
+        previewImg.src = URL.createObjectURL(file);
+    }
     preview.style.display = 'block';
 }
 
@@ -177,12 +237,14 @@ function closeUploadModal(e) {
 function resetUploadForm() {
     uploadFileData = null;
     document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('upload-preview-img').style.display = 'block';
+    document.getElementById('upload-preview-video').style.display = 'none';
     document.getElementById('upload-status').textContent = '';
     document.getElementById('upload-status').className = 'upload-status';
     document.getElementById('upload-name-input').value = '';
     document.getElementById('upload-title-input').value = '';
     document.getElementById('upload-confirm-btn').disabled = false;
-    document.getElementById('upload-confirm-btn').textContent = 'SUBIR FOTO';
+    document.getElementById('upload-confirm-btn').textContent = 'SUBIR';
 }
 
 async function confirmUpload() {
@@ -197,68 +259,75 @@ async function confirmUpload() {
     }
 
     const photoTitle = titleInput || nameInput.toUpperCase();
-
     const btn = document.getElementById('upload-confirm-btn');
     const status = document.getElementById('upload-status');
     btn.disabled = true;
     btn.textContent = 'SUBIENDO...';
-    status.textContent = 'SUBIENDO A IMGBB...';
+    status.textContent = uploadMode === 'video' ? 'SUBIENDO VIDEO...' : 'SUBIENDO A IMGBB...';
     status.className = 'upload-status uploading';
 
-    const formData = new FormData();
-    formData.append('image', uploadFileData);
-
     try {
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
-            method: 'POST',
-            body: formData
+        let url = '';
+
+        if (uploadMode === 'video') {
+            // Upload video to Firebase Storage
+            status.textContent = 'SUBIENDO VIDEO A LA NUBE...';
+            const storageRef = firebase.storage().ref();
+            const videoRef = storageRef.child(`family-videos/${Date.now()}-${uploadFileData.name}`);
+            const snapshot = await videoRef.put(uploadFileData);
+            url = await snapshot.ref.getDownloadURL();
+        } else {
+            // Upload photo to imgBB
+            const formData = new FormData();
+            formData.append('image', uploadFileData);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`imgBB respondió ${res.status}: ${errText}`);
+            }
+            const data = await res.json();
+            if (!data.success) throw new Error(`imgBB error: ${JSON.stringify(data)}`);
+            url = data.data.url;
+        }
+
+        status.textContent = 'GUARDANDO EN LA NUBE...';
+
+        await db.collection('family-photos').add({
+            name: nameInput,
+            title: photoTitle,
+            url: url,
+            type: uploadMode,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`imgBB respondió ${res.status}: ${errText}`);
-        }
+        status.textContent = uploadMode === 'video' ? 'VIDEO SUBIDO EXITOSAMENTE' : 'FOTO SUBIDA EXITOSAMENTE';
+        status.className = 'upload-status success';
+        btn.textContent = 'SUBIDA OK';
 
-        const data = await res.json();
-
-        if (data.success) {
-            status.textContent = 'GUARDANDO EN LA NUBE...';
-
-            await db.collection('family-photos').add({
-                name: nameInput,
-                title: photoTitle,
-                url: data.data.url,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            status.textContent = 'FOTO SUBIDA EXITOSAMENTE';
-            status.className = 'upload-status success';
-            btn.textContent = 'SUBIDA OK';
-
-            setTimeout(() => {
-                document.getElementById('upload-modal').classList.remove('active');
-                document.body.style.overflow = '';
-                resetUploadForm();
-            }, 1500);
-        } else {
-            throw new Error(`imgBB error: ${JSON.stringify(data)}`);
-        }
+        setTimeout(() => {
+            document.getElementById('upload-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            resetUploadForm();
+        }, 1500);
     } catch (err) {
         console.error('Upload error:', err);
         status.textContent = 'ERROR: ' + err.message.substring(0, 80);
         status.className = 'upload-status error';
         btn.disabled = false;
-        btn.textContent = 'REIntentAR';
+        btn.textContent = 'REINTENTAR';
     }
 }
 
-/* LOAD PHOTOS FROM FIREBASE */
+/* LOAD CONTENT FROM FIREBASE */
 function loadFamilyPhotos() {
     db.collection('family-photos').orderBy('timestamp', 'asc').onSnapshot(snapshot => {
         snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
-                const photo = change.doc.data();
-                addUserPhotoToGallery({ ...photo, id: change.doc.id });
+                const item = change.doc.data();
+                addUserDataToGallery({ ...item, id: change.doc.id });
             }
             if (change.type === 'removed') {
                 const el = document.querySelector(`[data-photo-id="${change.doc.id}"]`);
@@ -268,31 +337,87 @@ function loadFamilyPhotos() {
     });
 }
 
-function addUserPhotoToGallery(photo) {
+function addUserDataToGallery(item) {
     const grid = document.querySelector('.gallery-grid');
     if (!grid) return;
-    if (grid.querySelector(`[data-photo-id="${photo.id}"]`)) return;
+    if (grid.querySelector(`[data-photo-id="${item.id}"]`)) return;
 
-    const displayTitle = (photo.title || photo.name).toUpperCase();
+    const displayTitle = (item.title || item.name).toUpperCase();
+    const isVideo = item.type === 'video';
 
-    const item = document.createElement('div');
-    item.className = 'gallery-item user-photo';
-    item.setAttribute('data-photo-id', photo.id);
-    item.setAttribute('onclick', 'openLightbox(this)');
-    item.innerHTML = `
-        <img src="${photo.url}" alt="${displayTitle}" class="gallery-img">
-        <div class="photo-caption">${displayTitle}</div>
-        <div class="photo-author">${photo.name.toUpperCase()}</div>
-        <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto('${photo.id}')">X</button>
-    `;
-    grid.appendChild(item);
+    const el = document.createElement('div');
+    el.className = 'gallery-item user-photo' + (isVideo ? ' user-video' : '');
+    el.setAttribute('data-photo-id', item.id);
+
+    if (isVideo) {
+        el.setAttribute('onclick', 'openVideoLightbox(this)');
+        el.innerHTML = `
+            <video class="gallery-img" preload="metadata" muted>
+                <source src="${item.url}" type="video/mp4">
+            </video>
+            <div class="video-play-icon">&#9654;</div>
+            <div class="photo-caption">${displayTitle}</div>
+            <div class="photo-author">${item.name.toUpperCase()}</div>
+            <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto('${item.id}')">X</button>
+        `;
+    } else {
+        el.setAttribute('onclick', 'openLightbox(this)');
+        el.innerHTML = `
+            <img src="${item.url}" alt="${displayTitle}" class="gallery-img">
+            <div class="photo-caption">${displayTitle}</div>
+            <div class="photo-author">${item.name.toUpperCase()}</div>
+            <button class="user-photo-remove" onclick="event.stopPropagation(); removeUserPhoto('${item.id}')">X</button>
+        `;
+    }
+    grid.appendChild(el);
 }
+
+function openVideoLightbox(el) {
+    const video = el.querySelector('video');
+    const caption = el.querySelector('.photo-caption');
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbTitle = document.getElementById('lightbox-title');
+
+    // Replace img with video in lightbox
+    lbImg.style.display = 'none';
+    let lbVideo = document.getElementById('lightbox-video');
+    if (!lbVideo) {
+        lbVideo = document.createElement('video');
+        lbVideo.id = 'lightbox-video';
+        lbVideo.style.cssText = 'max-width:100%;max-height:80vh;object-fit:contain;border:3px solid #fdfdfa;box-shadow:0 0 60px rgba(255,42,0,0.3);';
+        lbVideo.controls = true;
+        lbVideo.autoplay = true;
+        document.querySelector('.lightbox-content').appendChild(lbVideo);
+    }
+    lbVideo.src = video.querySelector('source').src;
+    lbVideo.style.display = 'block';
+
+    lbTitle.textContent = caption ? caption.textContent : '';
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Clean up video lightbox when closing
+const origCloseLightbox = closeLightbox;
+closeLightbox = function(e) {
+    if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
+        const lbVideo = document.getElementById('lightbox-video');
+        if (lbVideo) {
+            lbVideo.pause();
+            lbVideo.style.display = 'none';
+        }
+        const lbImg = document.getElementById('lightbox-img');
+        if (lbImg) lbImg.style.display = 'block';
+    }
+    origCloseLightbox(e);
+};
 
 async function removeUserPhoto(id) {
     try {
         await db.collection('family-photos').doc(id).delete();
     } catch (err) {
-        console.error('Error removing photo:', err);
+        console.error('Error removing:', err);
     }
 }
 

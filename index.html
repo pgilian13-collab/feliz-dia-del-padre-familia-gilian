@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -295,27 +296,56 @@
     <div id="upload-modal" class="upload-modal" onclick="closeUploadModal(event)">
         <div class="upload-modal-content">
             <div class="upload-modal-header">
-                <span class="upload-modal-label">// SUBIR FOTO</span>
+                <span class="upload-modal-label">// SUBIR CONTENIDO</span>
                 <button class="lightbox-close" onclick="closeUploadModal(event)">X</button>
             </div>
-            <div class="upload-dropzone" id="upload-dropzone">
-                <div class="upload-dropzone-icon">+</div>
-                <p class="upload-dropzone-text">ARRASTRA TU FOTO AQUÍ</p>
-                <p class="upload-dropzone-sub">o haz clic para seleccionar</p>
-                <input type="file" id="upload-input" accept="image/*" style="display:none">
+
+            <div class="upload-type-tabs">
+                <button class="upload-tab active" id="tab-foto" onclick="switchUploadTab('foto')">FOTO</button>
+                <button class="upload-tab" id="tab-video" onclick="switchUploadTab('video')">VIDEO</button>
             </div>
+
+            <!-- FOTO TAB -->
+            <div class="upload-tab-content active" id="upload-foto-tab">
+                <div class="upload-dropzone" id="upload-dropzone">
+                    <div class="upload-dropzone-icon">+</div>
+                    <p class="upload-dropzone-text">ARRASTRA TU FOTO AQUÍ</p>
+                    <p class="upload-dropzone-sub">o haz clic para seleccionar</p>
+                    <input type="file" id="upload-input" accept="image/*" style="display:none">
+                </div>
+                <div class="upload-camera-btn" onclick="openCamera('foto')">
+                    <span>&#128247;</span> TOMAR FOTO CON CÁMARA
+                </div>
+                <input type="file" id="camera-input-foto" accept="image/*" capture="environment" style="display:none">
+            </div>
+
+            <!-- VIDEO TAB -->
+            <div class="upload-tab-content" id="upload-video-tab">
+                <div class="upload-dropzone" id="upload-dropzone-video">
+                    <div class="upload-dropzone-icon">&#9654;</div>
+                    <p class="upload-dropzone-text">ARRASTRA TU VIDEO AQUÍ</p>
+                    <p class="upload-dropzone-sub">MP4, WEBM, MOV (max 50MB)</p>
+                    <input type="file" id="upload-input-video" accept="video/*" style="display:none">
+                </div>
+                <div class="upload-camera-btn" onclick="openCamera('video')">
+                    <span>&#127909;</span> GRABAR VIDEO CON CÁMARA
+                </div>
+                <input type="file" id="camera-input-video" accept="video/*" capture="environment" style="display:none">
+            </div>
+
             <div class="upload-name-field">
                 <label class="upload-name-label">TU NOMBRE:</label>
                 <input type="text" id="upload-name-input" class="upload-name-input" placeholder="Ej: Carlos Gilian">
             </div>
             <div class="upload-name-field">
-                <label class="upload-name-label">TÍTULO DE TU FOTO:</label>
+                <label class="upload-name-label">TÍTULO:</label>
                 <input type="text" id="upload-title-input" class="upload-name-input" placeholder="Ej: En la playa con la familia">
             </div>
             <div class="upload-status" id="upload-status"></div>
             <div class="upload-preview" id="upload-preview" style="display:none">
                 <img id="upload-preview-img" src="">
-                <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">SUBIR FOTO</button>
+                <video id="upload-preview-video" style="display:none; max-width:100%; max-height:200px; border:2px solid var(--text-main);"></video>
+                <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmUpload()">SUBIR</button>
             </div>
         </div>
     </div>
