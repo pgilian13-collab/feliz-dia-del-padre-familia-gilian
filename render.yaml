@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: feliz-dia-del-padre-familia
+    runtime: static
+    buildCommand: echo "Static site"
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
