@@ -191,6 +191,12 @@ async function confirmUpload() {
             method: 'POST',
             body: formData
         });
+
+        if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`imgBB respondió ${res.status}: ${errText}`);
+        }
+
         const data = await res.json();
 
         if (data.success) {
@@ -213,13 +219,14 @@ async function confirmUpload() {
                 resetUploadForm();
             }, 1500);
         } else {
-            throw new Error('Upload failed');
+            throw new Error(`imgBB error: ${JSON.stringify(data)}`);
         }
     } catch (err) {
-        status.textContent = 'ERROR AL SUBIR, INTENTA DE NUEVO';
+        console.error('Upload error:', err);
+        status.textContent = 'ERROR: ' + err.message.substring(0, 80);
         status.className = 'upload-status error';
         btn.disabled = false;
-        btn.textContent = 'SUBIR FOTO';
+        btn.textContent = 'REIntentAR';
     }
 }
 

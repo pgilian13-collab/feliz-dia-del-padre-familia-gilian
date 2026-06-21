@@ -1156,9 +1156,11 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 .upload-status {
     margin: 0 1.5rem 1rem;
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     letter-spacing: 1px;
     text-transform: uppercase;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
 .upload-status.uploading { color: var(--accent); }
