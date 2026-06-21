@@ -1497,16 +1497,16 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 
 .slideshow-label {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.5rem;
     letter-spacing: 2px;
-    color: #ff2a00;
+    color: #444;
     text-transform: uppercase;
 }
 
 .slideshow-counter {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: #fdfdfa;
+    font-size: 0.6rem;
+    color: #555;
     letter-spacing: 1px;
 }
 
@@ -1521,11 +1521,11 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 
 .slideshow-arrow {
     background: none;
-    border: 2px solid #333;
-    color: #fdfdfa;
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
+    border: 1px solid #333;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s;
     flex-shrink: 0;
@@ -1537,34 +1537,43 @@ body:has(.theme-toggle-input:checked) .lightbox-close:hover {
 }
 
 .slideshow-image-wrap {
-    max-width: 80vw;
-    max-height: 75vh;
+    width: 95vw;
+    height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
 .slideshow-image-wrap img {
     max-width: 100%;
-    max-height: 70vh;
+    max-height: 85vh;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    border: 3px solid #fdfdfa;
+    border: none;
 }
 
 .slideshow-caption {
-    margin-top: 1rem;
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: #fdfdfa;
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(253, 253, 250, 0.4);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+    white-space: nowrap;
 }
 
 .slideshow-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background: #0a0a0a;
-    border-top: 2px solid #333;
+    padding: 0.8rem 2rem;
+    background: transparent;
+    border-top: 1px solid #222;
 }
 
 body:has(.theme-toggle-input:checked) .music-player {
